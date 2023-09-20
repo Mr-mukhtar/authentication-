@@ -15,11 +15,15 @@ const AuthForm = () => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
-  
+    setIsLoading(true);
+    let url;
     if (isLogin) {
-      setIsLoading(true);
-    } else {
-      fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDHUcTfihlX_L2tfGc6WWSDBWqbxxbciuk', {
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDHUcTfihlX_L2tfGc6WWSDBWqbxxbciuk'
+    } else { 
+      url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDHUcTfihlX_L2tfGc6WWSDBWqbxxbciuk'
+   }
+    fetch(url,
+       {
         method: 'POST',
         body: JSON.stringify({
           email: enteredEmail,
@@ -33,26 +37,30 @@ const AuthForm = () => {
         .then(response => {
           setIsLoading(false);
           if (response.ok) {
-            // Handle successful signup
+          return response.json();
           } else {
             return response.json().then(data => {
-              let errorMessage = 'Authentication failed!';
+              let errorMessage ;
               if (data && data.error && data.error.message) {
                 errorMessage = data.error.message; 
               }
-              alert(errorMessage);
+            
+              throw new Error(errorMessage)
             });
           }
+        }).then(data =>{
+          console.log(data)
         })
         .catch(error => {
           setIsLoading(false);
-          alert('Something went wrong. Please try again later.'); 
+          alert(error.errorMessage);
+         
         });
-    }
+    
   };
-  
 
-  return (
+
+return (
     <section className={classes.auth}>
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>
       <form onSubmit={submitHandler}>
