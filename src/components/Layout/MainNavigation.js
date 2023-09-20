@@ -30,7 +30,7 @@ const MainNavigation = () => {
           )}
           {isLoggedIn && (
             <li>
-              <button onSubmit={logoutHandler}>Logout</button>
+              <button onClick={logoutHandler}>Logout</button>
             </li>
           )}
         </ul>
